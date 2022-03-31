@@ -1,13 +1,21 @@
 const http = require('http');
 const formidable = require('formidable');
+const fs = require('fs');
 const config = require('config');
+
+const filePath = config.get('server.upload_file_path');
 
 http.createServer(function (req, res) {
     if (req.url == '/upload') {
         const form = new formidable.IncomingForm();
         form.parse(req, function (err, fields, files) {
-            res.write('File uploaded');
-            res.end();
+            var filepath = files.filetoupload.filepath;
+            var newpath = `${filePath}/${files.filetoupload.originalFilename}`;
+            fs.rename(filepath, newpath, function (err) {
+                if (err) throw err;
+                res.write('File uploaded!');
+                res.end();
+            });
         });
     } else {
         res.writeHead(200, { 'Content-Type': 'text/html' });
