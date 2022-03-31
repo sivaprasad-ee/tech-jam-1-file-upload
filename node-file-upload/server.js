@@ -1,5 +1,6 @@
 const http = require('http');
 const formidable = require('formidable');
+const config = require('config');
 
 http.createServer(function (req, res) {
     if (req.url == '/upload') {
@@ -16,4 +17,4 @@ http.createServer(function (req, res) {
         res.write('</form>');
         return res.end();
     }
-}).listen(8080);
+}).listen(config.get('server.port'));
