@@ -12,21 +12,35 @@ http.createServer(function (req, res) {
         "Access-Control-Max-Age": 2592000, // 30 days
     };
 
-    const form = new formidable.IncomingForm();
+    const options = {
+        filter: function ({ name, originalFilename, mimetype }) {
+            const validType = mimetype && mimetype.includes("image");
+            if (!validType) {
+                throw Error("not a valid type")
+            }
+            return validType;
+        }
+    };
+
+    const form = formidable(options);
+
     form.on('progress', (bytesReceived, bytesExpected) => {
         const progress = (bytesReceived / bytesExpected * 100).toFixed(2)
         console.log(`Processing  ...  ${progress}% done`);
     });
 
     form.parse(req, function (err, fields, data) {
+        if (err) {
+            res.writeHead(406, headers);
+            res.end(err.message);
+            return;
+        }
         const filepath = data.filetoupload.filepath;
         const newpath = `${uploadFilePath}/${data.filetoupload.originalFilename}`;
         fs.rename(filepath, newpath, function (err) {
             if (err) throw err;
             res.writeHead(200, headers);
-            http.createServer(function (req, res) {
-                res.end();
-            });
+            res.end('File uploaded!');
         });
     });
 }).listen(config.get('server.port'))
