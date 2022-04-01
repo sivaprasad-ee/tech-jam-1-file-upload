@@ -1,0 +1,6 @@
+{
+    "server": {
+        "port": 8080,
+        "upload_file_path": "files"
+    }
+}
