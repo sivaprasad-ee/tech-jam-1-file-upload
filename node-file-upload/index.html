@@ -6,7 +6,7 @@
 
 <body>
     <form>
-        <input id="fileupload" type="file" name="fileupload" />
+        <input id="fileupload" type="file" name="fileupload" multiple />
         <br />
         <br />
         <button type="button" id="upload-button" onclick="uploadFile()"> Upload </button>
@@ -14,7 +14,10 @@
     <script>
         async function uploadFile() {
             let formData = new FormData();
-            formData.append("filetoupload", fileupload.files[0]);
+
+            [...fileupload.files].forEach(file => {
+                formData.append('filetoupload[]', file, file.name);
+            })
             await fetch('http://localhost:8080/upload', {
                 method: "POST",
                 body: formData
