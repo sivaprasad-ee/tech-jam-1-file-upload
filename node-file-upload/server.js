@@ -19,7 +19,10 @@ http.createServer(function (req, res) {
                 throw Error("not a valid type")
             }
             return validType;
-        }
+        },
+        uploadDir: uploadFilePath,
+        keepExtensions: true,
+        filename: (name, ext, part) => part.originalFilename
     };
 
     const form = formidable(options);
@@ -35,12 +38,8 @@ http.createServer(function (req, res) {
             res.end(err.message);
             return;
         }
-        const filepath = data.filetoupload.filepath;
-        const newpath = `${uploadFilePath}/${data.filetoupload.originalFilename}`;
-        fs.rename(filepath, newpath, function (err) {
-            if (err) throw err;
-            res.writeHead(200, headers);
-            res.end('File uploaded!');
-        });
+
+        res.writeHead(200, headers);
+        res.end('File uploaded!');
     });
 }).listen(config.get('server.port'))
